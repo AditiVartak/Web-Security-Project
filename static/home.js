@@ -40,6 +40,17 @@ document.getElementById("submit-btn").addEventListener("click", function () {
                 </div>
             `;
         } 
+        else if (["rate_limited", "banned", "blocklisted"].includes(data.status)) {
+            resultDiv.innerHTML = `
+                <div class="result-box danger">
+                    <div class="result-icon">⛔</div>
+                    <div class="result-message">
+                        <div class="pulse-text">${data.message}</div>
+                        <div class="sub-text">Traffic control: ${data.category}</div>
+                    </div>
+                </div>
+            `;
+        }
         else {
             resultDiv.innerHTML = `
                 <div class="result-box success">

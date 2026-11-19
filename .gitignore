@@ -1,0 +1,6 @@
+logs/waf_events.db
+logs/*.log
+__pycache__/
+*.pyc
+admin_credentials.json
+admin_credentials.tmp

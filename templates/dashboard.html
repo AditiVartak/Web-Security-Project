@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>WAFinity - Security Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #000; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; }
+        .wrap { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+        header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+        h1 { margin: 0; font-size: 1.8rem; background: linear-gradient(90deg, #fff, #00FFD1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .controls { display: flex; gap: 10px; align-items: center; }
+        select, a.btn, button.btn { background: rgba(0,255,234,0.08); color: #00FFD1; border: 1px solid rgba(0,255,234,0.3); border-radius: 8px; padding: 8px 14px; font-size: 0.95rem; text-decoration: none; cursor: pointer; }
+        .live { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+        .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #00FFD1; margin-right: 6px; animation: pulse 1.5s infinite; }
+        .dot.off { background: #ff4d6d; animation: none; }
+        @keyframes pulse { 50% { opacity: 0.3; } }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .card, .panel { background: rgba(255,255,255,0.04); border: 1px solid rgba(0,255,234,0.15); border-radius: 16px; padding: 20px; }
+        .card .label { color: rgba(255,255,255,0.6); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .card .value { font-size: 2.2rem; font-weight: 700; margin-top: 6px; }
+        .v-total { color: #fff; } .v-blocked { color: #ff4d6d; } .v-allowed { color: #00FFD1; } .v-ratio { color: #ffb703; }
+        .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .panel h3 { margin: 0 0 14px; font-size: 1.05rem; color: #00FFD1; }
+        .chart-box { position: relative; height: 260px; }
+        .empty { color: rgba(255,255,255,0.4); text-align: center; padding: 40px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { text-align: left; color: rgba(255,255,255,0.6); font-weight: 500; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+        td.payload { font-family: Consolas, monospace; max-width: 380px; word-break: break-all; color: rgba(255,255,255,0.85); }
+        .badge { padding: 2px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+        .b-blocked { background: rgba(255,77,109,0.18); color: #ff4d6d; }
+        .b-allowed { background: rgba(0,255,209,0.15); color: #00FFD1; }
+        .feed-wrap { max-height: 420px; overflow: auto; }
+        .ips { list-style: none; margin: 0; padding: 0; }
+        .unban { background: rgba(255,77,109,0.15); color: #ff8fa3; border: 1px solid rgba(255,77,109,0.4); border-radius: 6px; padding: 3px 10px; cursor: pointer; margin-left: 12px; }
+        .ips li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-family: Consolas, monospace; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <h1>WAFinity Security Dashboard</h1>
+        <div class="controls">
+            <span class="live"><span class="dot" id="live-dot"></span><span id="live-text">Live</span></span>
+            <select id="range">
+                <option value="1h">Last hour</option>
+                <option value="24h" selected>Last 24 hours</option>
+                <option value="7d">Last 7 days</option>
+                <option value="all">All time</option>
+            </select>
+            <a class="btn" id="export-csv" href="/api/export?format=csv&range=24h">Export CSV</a>
+            <a class="btn" id="export-json" href="/api/export?format=json&range=24h">Export JSON</a>
+            <a class="btn" href="{{ url_for('main.home') }}">Request Checker</a>
+            <form method="post" action="{{ url_for('auth.logout') }}" style="margin:0">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button class="btn" type="submit">Log out</button>
+            </form>
+        </div>
+    </header>
+
+    <section class="cards">
+        <div class="card"><div class="label">Total Requests</div><div class="value v-total" id="c-total">0</div></div>
+        <div class="card"><div class="label">Attacks Blocked</div><div class="value v-blocked" id="c-blocked">0</div></div>
+        <div class="card"><div class="label">Allowed</div><div class="value v-allowed" id="c-allowed">0</div></div>
+        <div class="card"><div class="label">Block Ratio</div><div class="value v-ratio" id="c-ratio">0%</div></div>
+    </section>
+
+    <section class="grid2">
+        <div class="panel"><h3>Allowed vs Blocked</h3><div class="chart-box"><canvas id="ch-ratio"></canvas></div></div>
+        <div class="panel"><h3>Attack Breakdown</h3><div class="chart-box"><canvas id="ch-cat"></canvas></div></div>
+    </section>
+
+    <section class="grid2">
+        <div class="panel"><h3>Traffic Over Time</h3><div class="chart-box"><canvas id="ch-time"></canvas></div></div>
+        <div class="panel"><h3>Top Source IPs (blocked)</h3><ul class="ips" id="ips"></ul></div>
+    </section>
+
+    <section class="panel" style="margin-bottom:20px">
+        <h3>Active Bans</h3>
+        <ul class="ips" id="bans"></ul>
+    </section>
+
+    <section class="panel">
+        <h3>Live Event Feed</h3>
+        <div class="feed-wrap">
+            <table>
+                <thead><tr><th>Time</th><th>Client IP</th><th>Action</th><th>Category</th><th>Detected by</th><th>Rule</th><th>Payload</th></tr></thead>
+                <tbody id="feed"></tbody>
+            </table>
+            <div class="empty" id="feed-empty">No events yet. Submit some requests on the Request Checker page.</div>
+        </div>
+    </section>
+</div>
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

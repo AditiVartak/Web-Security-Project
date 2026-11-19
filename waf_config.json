@@ -1,0 +1,32 @@
+{
+  "rate_limit": {
+    "enabled": true,
+    "max_requests": 30,
+    "window_seconds": 60
+  },
+  "auto_ban": {
+    "enabled": true,
+    "max_attacks": 5,
+    "window_seconds": 60,
+    "ban_seconds": 300
+  },
+  "allowlist": [],
+  "blocklist": [],
+  "trust_proxy_headers": false,
+  "proxy_rate_limit": {
+    "enabled": true,
+    "max_requests": 300,
+    "window_seconds": 60
+  },
+  "proxy": {
+    "enabled": true,
+    "listen_host": "127.0.0.1",
+    "listen_port": 8080,
+    "backend_url": "http://127.0.0.1:3000",
+    "mode": "block",
+    "max_body_bytes": 131072,
+    "timeout_seconds": 10,
+    "ml_on_obfuscated": true,
+    "log_allowed": true
+  }
+}

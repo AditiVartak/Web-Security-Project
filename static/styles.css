@@ -470,6 +470,9 @@ body::before {
     transition: color 0.3s ease;
     display: flex;
     align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 .nav-link:hover {
